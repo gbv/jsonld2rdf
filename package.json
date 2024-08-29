@@ -23,7 +23,7 @@
   "scripts": {
     "test": "npm run lint",
     "lint": "eslint --fix './**/*.js'",
-    "release": "git checkout dev && git pull && npm run build && npm version $SEMVER && git push && git checkout main && git merge dev && git push --follow-tags && git checkout dev",
+    "release": "git checkout dev && git pull && npm test && npm version $SEMVER && git push && git checkout main && git merge dev && git push --follow-tags && git checkout dev",
     "release:patch": "SEMVER=patch npm run release",
     "release:minor": "SEMVER=minor npm run release",
     "release:major": "SEMVER=major npm run release"
