@@ -7,7 +7,15 @@ import { write } from "@jeswr/pretty-turtle"
 import ParserN3 from "@rdfjs/parser-n3"
 import { Readable } from "readable-stream"
 
-const readJSON = file => JSON.parse(fs.readFileSync(file, "utf-8"))
+const readJSON = file => {
+  try {
+    const input = file === "-" ? process.stdin.fd : file
+    return JSON.parse(fs.readFileSync(input, "utf-8"))
+  } catch(e) {
+    console.error(e instanceof SyntaxError && file !== "-" ? `${file}: ${e.message}` : e.message)
+    process.exit(1)
+  }
+}
 
 program
   .name("jsonld2rdf")
@@ -17,7 +25,7 @@ program
   .option("-p, --prefixes <file>", "RDF Prefix map (as JSON object) for Turtle output")
   .action(async (files, options) => {
     if (!files.length) files = ["-"]
-    const input = files.map(file => readJSON(file === "-" ? process.stdin.fd : file))
+    const input = files.map(readJSON)
 
     if (options.context) {
       const context = readJSON(options.context)
