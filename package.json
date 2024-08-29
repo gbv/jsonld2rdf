@@ -1,0 +1,43 @@
+{
+  "name": "jsonld2rdf",
+  "version": "0.1.0",
+  "description": "Convert JSON-LD to N-Triples or Turtle format",
+  "license": "MIT",
+  "homepage": "https://github.com/gbv/jsonld2rdf#readme",
+  "author": "Jakob Voß",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gbv/jsonld2rdf.git"
+  },
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.8.0",
+    "pre-commit": "^1.2.2"
+  },
+  "type": "module",
+  "bin": {
+    "jsonld2rdf": "./jsonld2rdf.js"
+  },
+  "scripts": {
+    "test": "npm run lint",
+    "lint": "eslint --fix './**/*.js'",
+    "release": "git checkout dev && git pull && npm run build && npm version $SEMVER && git push && git checkout main && git merge dev && git push --follow-tags && git checkout dev",
+    "release:patch": "SEMVER=patch npm run release",
+    "release:minor": "SEMVER=minor npm run release",
+    "release:major": "SEMVER=major npm run release"
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
+  "dependencies": {
+    "@jeswr/pretty-turtle": "^1.5.0",
+    "@rdfjs/parser-n3": "^2.0.2",
+    "commander": "^12.1.0",
+    "jsonld": "^8.3.2",
+    "mocha": "^10.7.3",
+    "readable-stream": "^4.5.2"
+  }
+}
