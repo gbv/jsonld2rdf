@@ -7,6 +7,9 @@ import { write } from "@jeswr/pretty-turtle"
 import ParserN3 from "@rdfjs/parser-n3"
 import { Readable } from "readable-stream"
 
+import { createRequire } from "module"
+const { name, description, version } = createRequire(import.meta.url)("./package.json")
+
 const readJSON = file => {
   try {
     const input = file === "-" ? process.stdin.fd : file
@@ -18,12 +21,18 @@ const readJSON = file => {
 }
 
 program
-  .name("jsonld2rdf")
-  .description("Convert JSON-LD to N-Triples or Turtle.")
+  .name(name)
+  .description(description)
   .argument("[file...]","JSON-LD input file")
   .option("-c, --context <file>", "JSON-LD context document")
   .option("-p, --prefixes <file>", "RDF Prefix map (as JSON object) for Turtle output")
+  .option("-V, --version", "show the version number")
   .action(async (files, options) => {
+    if (options.version) {
+      console.log(`${name} ${version}`)
+      return
+    }
+
     if (!files.length) files = ["-"]
     const input = files.map(readJSON)
 
@@ -44,16 +53,17 @@ program
 
     if (options.prefixes) {
       const prefixes = readJSON(options.prefixes) 
-      const quads = []
       const parserN3 = new ParserN3()
-      const output = parserN3.import(Readable.from(nt))
-      output.on("data", quad => quads.push(quad))
-        .on("end", async () => {
-          process.stdout.write(await write(quads, { prefixes }))
-        })
+      const turtle = await (new Promise((resolve) => {
+        const quads = []
+        const output = parserN3.import(Readable.from(nt))
+        output.on("data", quad => quads.push(quad))
+          .on("end", async () => resolve(await write(quads, { prefixes })))
+      }))
+      process.stdout.write(turtle)
     } else {
       process.stdout.write(nt)
     }
   })
 
-program.parse()    
+export default program

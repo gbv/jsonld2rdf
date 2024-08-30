@@ -59,7 +59,7 @@ with this context document `context.json`
 
 converted with `jsonld2rdf -c context.json example.json` to
 
-~~~nt
+~~~ttl
 <my:id> <http://purl.org/dc/terms/title> "test" .
 ~~~
 
@@ -81,5 +81,8 @@ it is converted with `jsonld2rdf -c context.json -p prefixes.json example.json` 
 
 ## See Also
 
-Implementation is based on package [@digitalcredentials/jsonld](https://www.npmjs.com/package/@digitalcredentials/jsonld). Similar packages include [jsonld-cli](https://www.npmjs.com/package/jsonld-cli) and [ndjsonld](https://www.npmjs.com/package/ndjsonld]).
+Implementation is based on package [@digitalcredentials/jsonld](https://www.npmjs.com/package/@digitalcredentials/jsonld). 
+
+
+Similar packages include [jsonld-cli](https://www.npmjs.com/package/jsonld-cli) and [ndjsonld](https://www.npmjs.com/package/ndjsonld]).
 
