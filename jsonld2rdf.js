@@ -1,6 +1,4 @@
-#!/usr/bin/env node
-
-import fs from "fs"
+import { readFileSync } from "fs"
 import { program } from "commander"
 import jsonld from "jsonld"
 import { write } from "@jeswr/pretty-turtle"
@@ -10,10 +8,23 @@ import { Readable } from "readable-stream"
 import { createRequire } from "module"
 const { name, description, version } = createRequire(import.meta.url)("./package.json")
 
-const readJSON = file => {
+// Avoid EAGAIN: resource temporarily unavailable, read
+const { stdin } = process
+const readStdin = async () => {
+  if (stdin.isTTY) return ""
+  const result = []
+  let length = 0
+  for await (const chunk of stdin) {
+    result.push(chunk)
+    length += chunk.length
+  }
+  return Buffer.concat(result, length).toString()
+}
+
+const readJSON = async file => {
   try {
-    const input = file === "-" ? process.stdin.fd : file
-    return JSON.parse(fs.readFileSync(input, "utf-8"))
+    const input = file === "-" ?await readStdin() : readFileSync(file, "utf-8")
+    return JSON.parse(input)
   } catch(e) {
     console.error(e instanceof SyntaxError && file !== "-" ? `${file}: ${e.message}` : e.message)
     process.exit(1)
@@ -33,11 +44,17 @@ program
       return
     }
 
-    if (!files.length) files = ["-"]
-    const input = files.map(readJSON)
+    if (!files.length) {
+      if (stdin.isTTY) {
+        program.help()
+        return
+      }
+      files = ["-"]
+    }
+    const input = await Promise.all(files.map(readJSON))
 
     if (options.context) {
-      const context = readJSON(options.context)
+      const context = await readJSON(options.context)
       for (let data of input) {
         if (Array.isArray(data)) {
           data.forEach(item => (item["@context"] = context))
@@ -52,7 +69,7 @@ program
     ))).join("\n")
 
     if (options.prefixes) {
-      const prefixes = readJSON(options.prefixes) 
+      const prefixes = await readJSON(options.prefixes) 
       const parserN3 = new ParserN3()
       const turtle = await (new Promise((resolve) => {
         const quads = []
