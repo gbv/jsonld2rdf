@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "eslint": "^9.8.0",
+    "mocha": "^10.7.3",
     "pre-commit": "^1.2.2"
   },
   "type": "module",
@@ -43,7 +44,6 @@
     "@rdfjs/parser-n3": "^2.0.2",
     "commander": "^12.1.0",
     "jsonld": "^8.3.2",
-    "mocha": "^10.7.3",
     "readable-stream": "^4.5.2"
   }
 }
