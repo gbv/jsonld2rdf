@@ -12,6 +12,8 @@ This package provides a command line client to convert JSON-LD files into N-Trip
 - [Background](#background)
 - [Install](#install)
 - [Usage](#usage)
+  - [Command line interface](#command-line-interface)
+  - [API](#api)
 - [See Also](#see-also)
 
 ## Install
@@ -21,6 +23,8 @@ npm install -g jsonld2rdf
 ~~~
 
 ## Usage
+
+### Command line interface
 
 ~~~sh
 Usage: jsonld2rdf [options] [file...]
@@ -79,10 +83,22 @@ it is converted with `jsonld2rdf -c context.json -p prefixes.json example.json` 
 <my:id> dct:title "test" .
 ~~~
 
+### API
+
+Function `jsonld2rdf` expects a file name or array of file names (use `-` for
+standard input), and optional `context` and `prefixes` as JSON objects. It
+returns a Turtle string if prefixes have been given or N-Triples otherwise.
+
+~~~js
+import { jsonld2rdf } from "jsonld2rdf"
+
+const nt = jsonld2rdf(["file.json"], { context })
+const ttl = jsonld2rdf(["file.json"], { context, prefixes })
+~~~
+
 ## See Also
 
-Implementation is based on package [@digitalcredentials/jsonld](https://www.npmjs.com/package/@digitalcredentials/jsonld). 
-
+Implementation is based on package [@digitalcredentials/jsonld](https://www.npmjs.com/package/@digitalcredentials/jsonld). Depending on your use case you may better directly use it.
 
 Similar packages include [jsonld-cli](https://www.npmjs.com/package/jsonld-cli) and [ndjsonld](https://www.npmjs.com/package/ndjsonld]).
 

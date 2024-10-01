@@ -26,8 +26,45 @@ const readJSON = async file => {
     const input = file === "-" ?await readStdin() : readFileSync(file, "utf-8")
     return JSON.parse(input)
   } catch(e) {
-    console.error(e instanceof SyntaxError && file !== "-" ? `${file}: ${e.message}` : e.message)
-    process.exit(1)
+    throw (e instanceof SyntaxError && file !== "-") ?
+      new SyntaxError(`${file}: ${e.message}`) : e
+  }
+}
+
+async function readInputs(files) {
+  if (!Array.isArray(files)) files = [files]
+  if (!files.length) files = ["-"]
+  return Promise.all(files.map(readJSON))
+}
+
+async function jsonld2rdf(files, { context, prefixes } = {}) {
+  const inputs = await readInputs(files)
+
+  if (context) {
+    for (let data of inputs) {
+      if (Array.isArray(data)) {
+        data.forEach(item => (item["@context"] = context))
+      } else {
+        data["@context"] = context
+      }
+    }
+  }
+
+  const nt = (await Promise.all(inputs.map(
+    data => jsonld.toRDF(data, {format: "application/n-quads"}),
+  ))).join("\n")
+
+  if (prefixes) {
+    const parserN3 = new ParserN3()
+    const turtle = await (new Promise((resolve) => {
+      const quads = []
+      const output = parserN3.import(Readable.from(nt))
+      output.on("data", quad => quads.push(quad))
+        .on("end", async () => resolve(await write(quads, { prefixes })))
+    }))
+    return turtle
+  } else {
+    return nt
   }
 }
 
@@ -44,43 +81,23 @@ program
       return
     }
 
-    if (!files.length) {
-      if (stdin.isTTY) {
-        program.help()
-        return
-      }
-      files = ["-"]
-    }
-    const input = await Promise.all(files.map(readJSON))
-
-    if (options.context) {
-      const context = await readJSON(options.context)
-      for (let data of input) {
-        if (Array.isArray(data)) {
-          data.forEach(item => (item["@context"] = context))
-        } else {
-          data["@context"] = context
-        }
-      }
+    if (stdin.isTTY && !files.length) {
+      program.help()
+      return
     }
 
-    const nt = (await Promise.all(input.map(
-      data => jsonld.toRDF(data, {format: "application/n-quads"}),
-    ))).join("\n")
-
-    if (options.prefixes) {
-      const prefixes = await readJSON(options.prefixes) 
-      const parserN3 = new ParserN3()
-      const turtle = await (new Promise((resolve) => {
-        const quads = []
-        const output = parserN3.import(Readable.from(nt))
-        output.on("data", quad => quads.push(quad))
-          .on("end", async () => resolve(await write(quads, { prefixes })))
-      }))
-      process.stdout.write(turtle)
-    } else {
-      process.stdout.write(nt)
+    try {
+      if (options.context) {
+        options.context = await readJSON(options.context)
+      }
+      if (options.prefixes) {
+        options.prefixes = await readJSON(options.prefixes)
+      }
+      process.stdout.write(await jsonld2rdf(files, options))
+    } catch(e) {
+      console.error(e.message)
+      process.exit(1)
     }
   })
 
-export default program
+export { program, jsonld2rdf }

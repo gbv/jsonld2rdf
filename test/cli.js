@@ -1,5 +1,5 @@
 import assert from "node:assert"
-import program from "../jsonld2rdf.js"
+import { program } from "../jsonld2rdf.js"
 
 async function run(args) {
   const stdout = []
