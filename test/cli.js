@@ -10,11 +10,16 @@ async function run(args) {
   return stdout.join("")
 }
 
-describe("test execution", () => {
+describe("test CLI", () => {
   it("convert without context", async () =>
     assert.equal(await run("test/example.json"), ""))
   it("convert with context", async () =>
     assert.equal(await run("-c test/context.json test/example.json"), "<my:id> <http://purl.org/dc/terms/title> \"test\" .\n"))
+  it("detect ndjson", async () =>
+    assert.equal(await run("-c test/context.json test/example.ndjson"),
+      `<x:1> <http://purl.org/dc/terms/title> "1" .
+<x:2> <http://purl.org/dc/terms/title> "2" .
+`))
   it("convert with prefixes", async () =>
     assert.equal(
       await run("-c test/context.json -p test/prefixes.json test/example.json"),

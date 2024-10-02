@@ -37,11 +37,14 @@ Arguments:
 Options:
   -c, --context <file>   JSON-LD context document
   -p, --prefixes <file>  RDF Prefix map (as JSON object) for Turtle output
+  -n, --ndjson           input is newline delimited JSON
   -h, --help             display help for command
 ~~~
 
 Reads from standard input by default or when file name is `-`. Input can be
-a JSON object or an array of JSON objects, each to be converted.
+a JSON object, an array of JSON objects or newline-delimited JSON. Each JSON
+object ist converted. Option `context` overrides an possibly existing field
+`@context`.
 
 For example this JSON file `example.json`
 
@@ -85,9 +88,14 @@ it is converted with `jsonld2rdf -c context.json -p prefixes.json example.json` 
 
 ### API
 
-Function `jsonld2rdf` expects a file name or array of file names (use `-` for
-standard input), and optional `context` and `prefixes` as JSON objects. It
-returns a Turtle string if prefixes have been given or N-Triples otherwise.
+Function `jsonld2rdf` expects a JSON object, a file name, or an array of file
+names and/or JSON objects to transform. File name `-` can be used for standard
+input and files ending with `.ndjson` or `.jsonl` are read as newline delimited
+JSON. The second argument is a options object with optional fields `context`
+and `prefixes` as JSON objects. Additional option field `ndjson` can be used to
+enforce reading input files as newline delimited JSON instead of plain JSON.
+The function returns a Turtle string if `prefixes` have been given or N-Triples
+otherwise.
 
 ~~~js
 import { jsonld2rdf } from "jsonld2rdf"

@@ -1,7 +1,7 @@
 import assert from "node:assert"
 import { jsonld2rdf } from "../jsonld2rdf.js"
 
-describe("test execution", () => {
+describe("test API", () => {
   it("convert without context", async () =>
     assert.equal(await jsonld2rdf(["test/example.json"]), ""))
 
