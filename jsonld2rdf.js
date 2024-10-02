@@ -41,7 +41,7 @@ const readJSON = async (file, ndjson) => {
 async function readInputs(files, ndjson) {
   if (!Array.isArray(files)) files = [files]
   if (!files.length) files = ["-"]
-  return Promise.all(files.map(file => readJSON(file, ndjson)))
+  return Promise.all(files.map(file => typeof file === "string" ? readJSON(file, ndjson) : file))
 }
 
 async function jsonld2rdf(files, { context, prefixes, ndjson } = {}) {

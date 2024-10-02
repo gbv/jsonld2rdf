@@ -17,4 +17,10 @@ describe("test API", () => {
 
 <my:id> ex:title "test" .
 `))
+
+  it("convert object", async () => {
+    const jsonld = { id: "x:1", title: "42" }
+    assert.equal(await jsonld2rdf(jsonld, { context }),
+      "<x:1> <http://example.org/title> \"42\" .\n")
+  })
 })
