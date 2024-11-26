@@ -23,4 +23,15 @@ describe("test API", () => {
     assert.equal(await jsonld2rdf(jsonld, { context }),
       "<x:1> <http://example.org/title> \"42\" .\n")
   })
+
+  it("convert array of objects", async () => {
+    const jsonld = [
+      { id: "x:1", title: "42" },
+      { id: "x:2", title: "23" },
+    ]
+    assert.equal(await jsonld2rdf(jsonld, { context }),
+      "<x:1> <http://example.org/title> \"42\" .\n"+
+      "<x:2> <http://example.org/title> \"23\" .\n")
+  })
+
 })

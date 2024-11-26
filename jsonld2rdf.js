@@ -59,7 +59,7 @@ async function jsonld2rdf(files, { context, prefixes, ndjson } = {}) {
 
   const nt = (await Promise.all(inputs.map(
     data => jsonld.toRDF(data, {format: "application/n-quads"}),
-  ))).join("\n")
+  ))).join("")
 
   if (prefixes) {
     const parserN3 = new ParserN3()

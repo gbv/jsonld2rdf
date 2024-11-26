@@ -100,8 +100,17 @@ otherwise.
 ~~~js
 import { jsonld2rdf } from "jsonld2rdf"
 
-const nt = jsonld2rdf(["file.json"], { context })
-const ttl = jsonld2rdf(["file.json"], { context, prefixes })
+const context = {
+  id: "@id",
+  title: "http://purl.org/dc/terms/title",
+}
+
+const prefixes = {
+  dct: "http://purl.org/dc/terms/"
+}
+
+var nt  = jsonld2rdf(["file.json"], { context })
+var ttl = jsonld2rdf(["file.json"], { context, prefixes })
 ~~~
 
 ## See Also
