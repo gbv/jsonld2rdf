@@ -1,6 +1,6 @@
 {
   "name": "jsonld2rdf",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Convert JSON-LD to N-Triples or Turtle format",
   "license": "MIT",
   "homepage": "https://github.com/gbv/jsonld2rdf#readme",
