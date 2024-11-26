@@ -18,6 +18,16 @@ describe("test API", () => {
 <my:id> ex:title "test" .
 `))
 
+  it("default prefixes", async () => {
+    const context = { id: "@id", title: "http://purl.org/dc/elements/1.1/title" }
+    assert.equal(await jsonld2rdf("test/example.json", { context, prefixes: true }),
+      `@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+<my:id> dc:title "test" .
+`)
+  })
+
+
   it("convert object", async () => {
     const jsonld = { id: "x:1", title: "42" }
     assert.equal(await jsonld2rdf(jsonld, { context }),

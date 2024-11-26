@@ -6,7 +6,8 @@ import ParserN3 from "@rdfjs/parser-n3"
 import { Readable } from "readable-stream"
 
 import { createRequire } from "module"
-const { name, description, version } = createRequire(import.meta.url)("./package.json")
+const require = createRequire(import.meta.url)
+const { name, description, version } = require("./package.json")
 
 // Avoid EAGAIN: resource temporarily unavailable, read
 const { stdin } = process
@@ -62,6 +63,9 @@ async function jsonld2rdf(files, { context, prefixes, ndjson } = {}) {
   ))).join("")
 
   if (prefixes) {
+    if (prefixes === true) {
+      prefixes = require("./common-prefixes.json")
+    }
     const parserN3 = new ParserN3()
     const turtle = await (new Promise((resolve) => {
       const quads = []
@@ -80,7 +84,7 @@ program
   .description(description)
   .argument("[file...]","JSON-LD input file")
   .option("-c, --context <file>", "JSON-LD context document")
-  .option("-p, --prefixes <file>", "RDF Prefix map (as JSON object) for Turtle output")
+  .option("-p, --prefixes [file]", "RDF Prefix map (as JSON object) for Turtle output")
   .option("-n, --ndjson", "Input is newline delimited JSON")
   .option("-V, --version", "show the version number")
   .action(async (files, options) => {
@@ -99,7 +103,7 @@ program
       if (context) {
         context = await readJSON(context)
       }
-      if (prefixes) {
+      if (prefixes && prefixes !== true) {
         prefixes = await readJSON(prefixes)
       }
       process.stdout.write(await jsonld2rdf(files, { context, prefixes, ndjson }))

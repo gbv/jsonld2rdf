@@ -36,7 +36,7 @@ Arguments:
 
 Options:
   -c, --context <file>   JSON-LD context document
-  -p, --prefixes <file>  RDF Prefix map (as JSON object) for Turtle output
+  -p, --prefixes [file]  RDF Prefix map (JSON object file) for Turtle output
   -n, --ndjson           input is newline delimited JSON
   -h, --help             display help for command
 ~~~
@@ -86,16 +86,22 @@ it is converted with `jsonld2rdf -c context.json -p prefixes.json example.json` 
 <my:id> dct:title "test" .
 ~~~
 
+The prefix file can be omitted to use the [list of common prefixes](https://github.com/gbv/jsonld2rdf/blob/main/jsonld2rdf.js):
+
+~~~sh
+jsonld2rdf -c context.json example.json -p
+~~~
+
 ### API
 
-Function `jsonld2rdf` expects a JSON object, a file name, or an array of file
-names and/or JSON objects to transform. File name `-` can be used for standard
-input and files ending with `.ndjson` or `.jsonl` are read as newline delimited
-JSON. The second argument is a options object with optional fields `context`
-and `prefixes` as JSON objects. Additional option field `ndjson` can be used to
-enforce reading input files as newline delimited JSON instead of plain JSON.
-The function returns a Turtle string if `prefixes` have been given or N-Triples
-otherwise.
+Function `jsonld2rdf` expects an object, a file name, or an array of file names
+and/or objects to transform. File name `-` can be used for standard input and
+files ending with `.ndjson` or `.jsonl` are read as newline delimited JSON. The
+second argument is a options object with optional fields `context` (object) and
+`prefixes` (object or special value `true`). Additional option field `ndjson`
+can be used to enforce reading input files as newline delimited JSON instead of
+plain JSON. The function returns a Turtle string if `prefixes` have been given
+or N-Triples otherwise.
 
 ~~~js
 import { jsonld2rdf } from "jsonld2rdf"
@@ -111,6 +117,9 @@ const prefixes = {
 
 var nt  = jsonld2rdf(["file.json"], { context })
 var ttl = jsonld2rdf(["file.json"], { context, prefixes })
+
+// just use common namespace prefixes
+var ttl = jsonld2rdf(["file.json"], { context, prefixes: true })
 ~~~
 
 ## See Also
