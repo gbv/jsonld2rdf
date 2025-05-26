@@ -115,11 +115,11 @@ const prefixes = {
   dct: "http://purl.org/dc/terms/"
 }
 
-var nt  = jsonld2rdf(["file.json"], { context })
-var ttl = jsonld2rdf(["file.json"], { context, prefixes })
+var nt  = await jsonld2rdf(["file.json"], { context })
+var ttl = await jsonld2rdf(["file.json"], { context, prefixes })
 
 // just use common namespace prefixes
-var ttl = jsonld2rdf(["file.json"], { context, prefixes: true })
+var ttl = await jsonld2rdf(["file.json"], { context, prefixes: true })
 ~~~
 
 ## See Also
