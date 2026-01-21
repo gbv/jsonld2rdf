@@ -1,18 +1,27 @@
-name: Release
+name: Release Package at npmjs
+
 on:
   push:
     tags:
-      - v*
+      - 'v*'
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  release:
+  npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish --access=public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+        registry-url: 'https://registry.npmjs.org'
+    - name: Install, build and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm test
+    - name: Publish to npm
+      run: npm publish --provenance --access=public
