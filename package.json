@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "eslint": "^9.8.0",
-    "mocha": "^10.7.3",
+    "mocha": "^11.7.5",
     "pre-commit": "^1.2.2"
   },
   "type": "module",
@@ -42,8 +42,8 @@
   "dependencies": {
     "@jeswr/pretty-turtle": "^1.5.0",
     "@rdfjs/parser-n3": "^2.0.2",
-    "commander": "^12.1.0",
-    "jsonld": "^8.3.2",
+    "commander": "^14.0.0",
+    "jsonld": "^9.0.0",
     "readable-stream": "^4.5.2"
   }
 }
